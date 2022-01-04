@@ -24,7 +24,9 @@ defmodule Sona.MixProject do
     [
       {:nostrum, github: "Kraigie/nostrum"},
       {:httpoison, "~> 1.8"},
-      {:jason, "~> 1.2"}
+      {:jason, "~> 1.2"},
+      {:sentry, "~> 8.0"},
+      {:hackney, "~> 1.8"}
     ]
   end
 end
