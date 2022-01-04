@@ -8,7 +8,6 @@ defmodule Sona.CommandHandler do
   require Logger
 
   @command_prefix Application.fetch_env!(:sona, :command_prefix)
-  @youtube_data_api_key Application.fetch_env!(:sona, :youtube_data_api_key)
 
   def start_link do
     Consumer.start_link(__MODULE__)
@@ -21,7 +20,7 @@ defmodule Sona.CommandHandler do
     end
   end
 
-  def handle_event({:MESSAGE_CREATE, %Nostrum.Struct.Message{content: @command_prefix <> " " <> command} = message, _websocket_state}) do
+  def handle_event({:MESSAGE_CREATE, %Nostrum.Struct.Message{content: @command_prefix <> command} = message, _websocket_state}) do
     case command do
       "wbijaj" ->
         case get_voice_channel_of_msg(message) do
@@ -88,7 +87,8 @@ defmodule Sona.CommandHandler do
         |> String.normalize(:nfd)
         |> String.replace(~r/[^A-z\s]/u, "")
         |> URI.encode
-      case HTTPoison.get "https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q=#{encoded_query}&type=video&key=#{@youtube_data_api_key}" do
+      youtube_data_api_key = Application.fetch_env!(:sona, :youtube_data_api_key)
+      case HTTPoison.get "https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q=#{encoded_query}&type=video&key=#{youtube_data_api_key}" do
         {:ok, response} ->
           body = Jason.decode!(response.body)
           results = Map.get(body, "items")
